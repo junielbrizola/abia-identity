@@ -1,0 +1,5 @@
+ARG KEYCLOAK_VERSION=26.8.2
+
+FROM quay.io/keycloak/keycloak:${KEYCLOAK_VERSION}
+
+COPY --chown=keycloak:keycloak themes/abia/ /opt/keycloak/themes/abia/

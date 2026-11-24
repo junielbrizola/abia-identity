@@ -1,0 +1,360 @@
+/* Keep the local identity screen aligned with the ABIA sign-in page. */
+body#keycloak-bg {
+	background:
+		radial-gradient(ellipse at 50% 0, #e8f5f2 0, transparent 52%),
+		#f4f6fa !important;
+	color: #162438;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.pf-v5-c-login {
+	display: flex !important;
+	min-height: 100vh;
+	align-items: center;
+	justify-content: center;
+	padding: 24px;
+}
+
+.pf-v5-c-login__container {
+	position: relative;
+	display: block !important;
+	width: min(410px, calc(100vw - 32px)) !important;
+	max-width: 410px !important;
+	padding: 0 !important;
+	margin: 0 auto !important;
+}
+
+.pf-v5-c-login__header {
+	position: absolute;
+	top: 31px;
+	left: 37px;
+	right: 37px;
+	z-index: 1;
+	width: auto;
+	margin: 0;
+}
+
+#kc-header-wrapper.pf-v5-c-brand {
+	display: flex;
+	flex-wrap: wrap;
+	min-width: 0;
+	max-width: 100%;
+	align-items: center;
+	justify-content: flex-start;
+	column-gap: 12px;
+	padding: 0;
+	color: #162438;
+	font-size: 18px;
+	font-weight: 700;
+	letter-spacing: -0.4px;
+	white-space: normal;
+	overflow-wrap: anywhere;
+	text-transform: none;
+}
+
+#kc-header-wrapper.pf-v5-c-brand::before {
+	content: "V";
+	display: grid;
+	width: 42px;
+	height: 42px;
+	flex: 0 0 42px;
+	place-items: center;
+	border-radius: 12px;
+	background: linear-gradient(145deg, #0d8178, #08675f);
+	box-shadow: 0 7px 18px rgb(13 129 120 / 26%);
+	color: #fff;
+	font: 800 21px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+#kc-header-wrapper.pf-v5-c-brand::after {
+	content: "PLATAFORMA DE ATENDIMENTO";
+	flex: 0 0 calc(100% - 54px);
+	margin: -8px 0 0 54px;
+	color: #6b788b;
+	font-size: 9px;
+	font-weight: 700;
+	letter-spacing: 1.1px;
+}
+
+.pf-v5-c-login__main {
+	width: min(410px, calc(100vw - 32px)) !important;
+	min-width: 0;
+	max-width: none;
+	margin: 0 !important;
+	padding: 112px 37px 37px;
+	border: 1px solid #dfe6ed;
+	border-radius: 14px;
+	background: #fff;
+	box-shadow: 0 18px 48px rgb(21 36 58 / 18%);
+}
+
+.pf-v5-c-login__main-body,
+#kc-form,
+#kc-form-wrapper {
+	box-sizing: border-box;
+	width: 100% !important;
+	min-width: 0;
+}
+
+.pf-v5-c-login__main-body {
+	padding: 0 !important;
+}
+
+.pf-v5-c-login__main-header {
+	margin: 0 0 24px;
+	padding: 0;
+	border: 0;
+}
+
+#kc-page-title.pf-v5-c-title {
+	color: #15243a;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	font-size: 25px;
+	font-weight: 650;
+	letter-spacing: -0.7px;
+}
+
+.pf-v5-c-form__label-text {
+	color: #34435a;
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.pf-v5-c-form-control {
+	--pf-v5-c-form-control--after--BorderBottomWidth: 0;
+	min-height: 44px;
+	width: 100%;
+	border: 1px solid #7f8da0 !important;
+	border-radius: 8px;
+	background: #fff;
+	box-shadow: none;
+}
+
+.pf-v5-c-form-control:focus-within {
+	--pf-v5-c-form-control--after--BorderBottomWidth: 0;
+	border-color: #0d8178 !important;
+	outline: 3px solid #075f58;
+	outline-offset: 2px;
+	box-shadow: none !important;
+}
+
+#kc-form-login #username,
+#kc-form-login #password {
+	width: 100%;
+	min-width: 0;
+	min-height: 42px;
+	padding: 0 12px;
+	border: 0 !important;
+	border-radius: 6px;
+	color: #162438;
+	background: transparent !important;
+	font: inherit;
+	box-shadow: none !important;
+}
+
+#kc-form-login #username:focus-visible,
+#kc-form-login #password:focus-visible {
+	outline: 0 !important;
+}
+
+#kc-form-login #password-show-password {
+	min-width: 44px;
+	min-height: 42px;
+	border: 0;
+	border-left: 1px solid #e5ebf0;
+	border-radius: 0 6px 6px 0;
+	color: #08675f;
+	background: #f8fafc;
+}
+
+#kc-form-login #password-show-password:hover {
+	color: #075f58;
+	background: #e8f5f2;
+}
+
+#kc-form-login,
+#kc-form-login .pf-v5-c-form-group,
+#kc-form-login .pf-v5-c-form__group,
+#kc-form-login .pf-v5-c-form__group-control,
+#kc-form-login .pf-v5-c-form-control,
+#kc-form-login .pf-v5-c-button {
+	box-sizing: border-box;
+	width: 100% !important;
+	min-width: 0;
+	max-width: 100%;
+}
+
+#kc-form-login {
+	grid-template-columns: minmax(0, 1fr) !important;
+	justify-items: stretch;
+}
+
+#kc-form-login .pf-v5-c-form-group,
+#kc-form-login .pf-v5-c-form__group {
+	min-width: 0;
+}
+
+.pf-v5-c-login__main a:not(.pf-v5-c-button) {
+	color: #08675f !important;
+	font-weight: 600;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+.pf-v5-c-login__main a:not(.pf-v5-c-button):hover {
+	color: #075f58 !important;
+}
+
+.pf-v5-c-login :is(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+	outline: 3px solid #075f58 !important;
+	outline-offset: 3px;
+	box-shadow: none !important;
+}
+
+.pf-v5-c-login__main .pf-v5-c-button.pf-m-primary {
+	--pf-v5-c-button--after--BorderColor: #0d8178;
+	min-height: 46px;
+	border-color: #0d8178;
+	border-radius: 8px;
+	background: #0d8178;
+	color: #fff;
+	font-weight: 600;
+}
+
+.pf-v5-c-login__main .pf-v5-c-button.pf-m-primary:hover {
+	--pf-v5-c-button--after--BorderColor: #0b6e66;
+	border-color: #0b6e66;
+	background: #0b6e66;
+}
+
+.pf-v5-c-login__main .pf-v5-c-button.pf-m-secondary {
+	--pf-v5-c-button--after--BorderColor: #0d8178;
+	--pf-v5-c-button--m-secondary--Color: #0d8178;
+	border-color: #0d8178;
+	border-radius: 7px;
+	background: #fff;
+	color: #0d8178;
+	font-weight: 600;
+}
+
+.pf-v5-c-login__main .pf-v5-c-button.pf-m-secondary:hover {
+	--pf-v5-c-button--after--BorderColor: #0b6e66;
+	--pf-v5-c-button--m-secondary--Color: #0b6e66;
+	border-color: #0b6e66;
+	background: #f4f6fa;
+	color: #0b6e66;
+}
+
+.pf-v5-c-login__main-footer,
+.pf-v5-c-login__main-footer-band {
+	color: #7c899b;
+}
+
+.abia-login-help {
+	margin-top: 20px;
+	padding-top: 16px;
+	border-top: 1px solid #e5ebf0;
+	color: #536176;
+	font-size: 12px;
+	line-height: 1.55;
+}
+
+.abia-login-help strong {
+	display: block;
+	margin-bottom: 4px;
+	color: #34435a;
+	font-size: 12px;
+}
+
+.abia-login-help p {
+	margin: 0;
+}
+
+.abia-login-help p + p {
+	margin-top: 8px;
+}
+
+.abia-login-help a {
+	color: #075f58;
+	font-weight: 650;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+.abia-login-help a:hover {
+	color: #0b6e66;
+}
+
+@media (max-width: 480px) {
+	.pf-v5-c-login {
+		padding: 16px;
+	}
+
+	.pf-v5-c-login__main {
+		padding: 96px 24px 24px;
+	}
+
+	.pf-v5-c-login__header {
+		top: 24px;
+		left: 24px;
+		right: 24px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	#keycloak-bg *,
+	#keycloak-bg *::before,
+	#keycloak-bg *::after {
+		scroll-behavior: auto !important;
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}
+
+@media (forced-colors: active) {
+	.pf-v5-c-login__main {
+		border-color: CanvasText;
+		color: CanvasText;
+		background: Canvas;
+		box-shadow: none;
+	}
+
+	.abia-login-help {
+		border-top-color: CanvasText;
+		color: CanvasText;
+	}
+
+	.abia-login-help strong {
+		color: CanvasText;
+	}
+
+	.abia-login-help a {
+		color: LinkText;
+	}
+
+	#kc-header-wrapper.pf-v5-c-brand {
+		color: CanvasText;
+	}
+
+	#kc-header-wrapper.pf-v5-c-brand::before {
+		border: 1px solid CanvasText;
+		color: CanvasText;
+		background: Canvas;
+		box-shadow: none;
+	}
+
+	.pf-v5-c-login__main .pf-v5-c-button.pf-m-primary,
+	.pf-v5-c-login__main .pf-v5-c-button.pf-m-secondary {
+		--pf-v5-c-button--after--BorderColor: ButtonText;
+		border-color: ButtonText;
+		color: ButtonText;
+		background: ButtonFace;
+	}
+
+	.pf-v5-c-login :is(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+		outline: 3px solid Highlight !important;
+		outline-offset: 3px;
+		box-shadow: none !important;
+	}
+}
