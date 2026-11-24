@@ -1,0 +1,39 @@
+{
+  "realm": "abia",
+  "enabled": true,
+  "displayName": "ABIA",
+  "loginTheme": "abia",
+  "internationalizationEnabled": true,
+  "supportedLocales": ["pt-BR"],
+  "defaultLocale": "pt-BR",
+  "sslRequired": "$REALM_SSL_REQUIRED",
+  "loginWithEmailAllowed": true,
+  "registrationAllowed": false,
+  "resetPasswordAllowed": true,
+  "smtpServer": {
+    "host": "$SMTP_HOST",
+    "port": "$SMTP_PORT",
+    "from": "$SMTP_FROM",
+    "fromDisplayName": "$SMTP_FROM_DISPLAY_NAME",
+    "auth": "false",
+    "ssl": "$SMTP_SSL",
+    "starttls": "$SMTP_STARTTLS"
+  },
+  "clients": [
+    {
+      "clientId": "$OIDC_CLIENT_ID",
+      "name": "ABIA Web",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": ["$OIDC_REDIRECT_URI"],
+      "webOrigins": ["$OIDC_WEB_ORIGIN"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      }
+    }
+  ]
+}
