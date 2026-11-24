@@ -15,5 +15,8 @@ RUN ./mvnw -pl quarkus/deployment,quarkus/dist -am -DskipTests clean install \
 
 FROM quay.io/keycloak/keycloak:${KEYCLOAK_VERSION}
 ARG KEYCLOAK_VERSION
+USER root
+RUN rm -rf /opt/keycloak && mkdir -p /opt/keycloak
 COPY --from=source-build --chown=keycloak:keycloak /out/keycloak-${KEYCLOAK_VERSION}/ /opt/keycloak/
 COPY --from=source-build --chown=keycloak:keycloak /src/themes/abia/ /opt/keycloak/themes/abia/
+USER keycloak
