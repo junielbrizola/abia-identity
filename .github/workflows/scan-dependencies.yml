@@ -9,30 +9,29 @@ permissions:
 
 jobs:
   define-refs:
-    if: github.event_name != 'schedule' || github.repository == 'keycloak/keycloak'
     runs-on: ubuntu-latest
     outputs:
       refs: ${{ steps.refs.outputs.refs }}
     steps:
       - id: refs
         run: |
-          BRANCHES=($(gh api --cache 1h --paginate /repos/${{ github.repository }}/branches -q '.[] | .name | select(startswith("release"))' | sort -V -r))
-          LATEST_REL_BRANCH=$(echo ${BRANCHES[0]} | sed 's|release/||') 
-          TAGS=($(gh api --cache 1h /repos/${{ github.repository }}/tags --paginate -q ".[] | .name | select(startswith(\"$LATEST_REL_BRANCH\"))" | sort -V -r))
-          LATEST_TAG=$(echo ${TAGS[0]}) 
-          
-          REFS='['
-          REFS+="\"refs/heads/main\""
-          for BRANCH in "${BRANCHES[@]}"; do
-              REFS+=", "
-              REFS+="\"refs/heads/$BRANCH\""
-          done
+          DEFAULT_BRANCH="$(gh api --cache 1h "/repos/${GITHUB_REPOSITORY}" --jq '.default_branch')"
+          ABIA_AND_RELEASE_BRANCHES="$(gh api --cache 1h --paginate "/repos/${GITHUB_REPOSITORY}/branches" --jq '.[].name' | grep -E '^(abia-|release/)' || true)"
+          LATEST_TAG="$(gh api --cache 1h --paginate "/repos/${GITHUB_REPOSITORY}/tags" --jq '.[].name' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n 1 || true)"
 
-          if [ "$LATEST_TAG" != "" ]; then 
-            REFS+=", \"refs/tags/$LATEST_TAG\""
-          fi
-          
-          REFS+=']'
+          REFS="$(
+            {
+              printf 'refs/heads/%s\n' "$DEFAULT_BRANCH"
+              if [[ -n "$ABIA_AND_RELEASE_BRANCHES" ]]; then
+                while IFS= read -r branch; do
+                  printf 'refs/heads/%s\n' "$branch"
+                done <<< "$ABIA_AND_RELEASE_BRANCHES"
+              fi
+              if [[ -n "$LATEST_TAG" ]]; then
+                printf 'refs/tags/%s\n' "$LATEST_TAG"
+              fi
+            } | sort -u | jq -Rsc 'split("\n") | map(select(length > 0))'
+          )"
 
           echo "refs=$REFS" >> "$GITHUB_OUTPUT"
         env:

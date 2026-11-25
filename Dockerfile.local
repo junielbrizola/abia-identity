@@ -1,6 +1,9 @@
 ARG KEYCLOAK_VERSION=26.8.2
+ARG KEYCLOAK_BUILDER_IMAGE=maven:3.9-eclipse-temurin-25
+ARG KEYCLOAK_RUNTIME_IMAGE=quay.io/keycloak/keycloak:${KEYCLOAK_VERSION}
+ARG KEYCLOAK_JAVA_OPTS_APPEND=-XX:-UseBASE64Intrinsics
 
-FROM maven:3.9-eclipse-temurin-25 AS source-build
+FROM ${KEYCLOAK_BUILDER_IMAGE} AS source-build
 ARG KEYCLOAK_VERSION
 WORKDIR /src
 COPY . .
@@ -13,10 +16,12 @@ RUN ./mvnw -pl quarkus/deployment,quarkus/dist -am -DskipTests clean install \
     && find "/out/keycloak-${KEYCLOAK_VERSION}/bin" -type f -name '*.sh' -exec chmod 755 {} \; \
     && test -f "/out/keycloak-${KEYCLOAK_VERSION}/bin/kc.sh"
 
-FROM quay.io/keycloak/keycloak:${KEYCLOAK_VERSION}
+FROM ${KEYCLOAK_RUNTIME_IMAGE}
 ARG KEYCLOAK_VERSION
+ARG KEYCLOAK_JAVA_OPTS_APPEND
 USER root
 RUN rm -rf /opt/keycloak && mkdir -p /opt/keycloak
 COPY --from=source-build --chown=keycloak:keycloak /out/keycloak-${KEYCLOAK_VERSION}/ /opt/keycloak/
 COPY --from=source-build --chown=keycloak:keycloak /src/themes/abia/ /opt/keycloak/themes/abia/
+ENV JAVA_OPTS_APPEND="${KEYCLOAK_JAVA_OPTS_APPEND}"
 USER keycloak
