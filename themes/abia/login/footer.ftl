@@ -12,7 +12,7 @@
 		<#if realm.resetPasswordAllowed>
 			<p>${msg("abiaLoginHelpResetPassword")}</p>
 			<#if mailboxUrlSchemeAllowed && mailboxLabel?has_content>
-					<p class="abia-login-mailbox-note"><#if mailboxMessage?has_content>${mailboxMessage?html} </#if><a href="${mailboxUrl?html}" target="_blank" rel="noopener noreferrer">${mailboxLabel?html}</a></p>
+				<p class="abia-login-mailbox-note"><#if mailboxMessage?has_content>${mailboxMessage} </#if><a href="${mailboxUrl}" target="_blank" rel="noopener noreferrer">${mailboxLabel}</a></p>
 			</#if>
 		<#else>
 			<p>${msg("abiaLoginHelpContactAdmin")}</p>
