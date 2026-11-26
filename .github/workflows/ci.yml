@@ -65,7 +65,7 @@ jobs:
         id: auroradb-tests
         run: |
           RUN_AURORADB_TESTS=false
-          if [[ $GITHUB_EVENT_NAME != "pull_request" && -n "${AWS_SECRET_ACCESS_KEY}" ]]; then
+          if [[ "$GITHUB_REPOSITORY" == "keycloak/keycloak" && $GITHUB_EVENT_NAME != "pull_request" && -n "${AWS_SECRET_ACCESS_KEY}" ]]; then
             RUN_AURORADB_TESTS=true
           fi
           echo "run-aurora-tests=$RUN_AURORADB_TESTS" >> $GITHUB_OUTPUT
@@ -76,7 +76,7 @@ jobs:
         id: azure-tests
         run: |
           RUN_AZURE_TESTS=false
-          if [[ $GITHUB_EVENT_NAME != "pull_request" && -n "${AZURE_CREDENTIALS}" ]]; then
+          if [[ "$GITHUB_REPOSITORY" == "keycloak/keycloak" && $GITHUB_EVENT_NAME != "pull_request" && -n "${AZURE_CREDENTIALS}" ]]; then
             RUN_AZURE_TESTS=true
           fi
           echo "run-azure-tests=$RUN_AZURE_TESTS" >> $GITHUB_OUTPUT
@@ -517,7 +517,7 @@ jobs:
   auroradb-integration-tests:
     name: AuroraDB IT
     needs: conditional
-    if: needs.conditional.outputs.ci-aurora == 'true'
+    if: github.repository == 'keycloak/keycloak' && needs.conditional.outputs.ci-aurora == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 150
     permissions:
@@ -690,7 +690,7 @@ jobs:
   azure-integration-tests:
     name: AzureDB IT
     needs: conditional
-    if: needs.conditional.outputs.ci-azure == 'true'
+    if: github.repository == 'keycloak/keycloak' && needs.conditional.outputs.ci-azure == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 150
     permissions:

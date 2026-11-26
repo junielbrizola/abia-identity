@@ -14,13 +14,13 @@ This repository is the ABIA GitHub fork of [keycloak/keycloak](https://github.co
 
 - `themes/abia/login/` contains the ABIA Portuguese login theme, moved from the product's local Keycloak integration.
 - `realm/abia-realm.json` is the canonical ABIA realm and OIDC client definition. `scripts/render_realm.py` fills environment-specific callback, SMTP, and TLS settings at deployment time.
-- `Dockerfile.local` compiles the Keycloak server distribution from this fork branch, adds the ABIA theme, and packages it on the corresponding Keycloak runtime base for local development. Keep the runtime image version aligned with the compiled source; the compiled server files replace the base image's Keycloak files.
+- `Dockerfile.local` compiles the Keycloak server distribution from this fork branch, adds the ABIA theme, and packages it on a custom Eclipse Temurin Java 25 JRE runtime for local development. `Dockerfile.gcp` uses the same custom Java 25 runtime approach and builds an optimized production image.
 - The ABIA product project calls the realm renderer with environment-specific callback and mail transport settings. Tenant/organization provisioning remains a separate ABIA backend operation.
 - Environment-specific renderer inputs can be passed as CLI arguments or `ABIA_IDENTITY_*` environment variables. Explicit CLI arguments take precedence over environment variables.
 - `ABIA_IDENTITY_LOGIN_HELP_MAILBOX_URL`, `ABIA_IDENTITY_LOGIN_HELP_MAILBOX_LABEL`, and `ABIA_IDENTITY_LOGIN_HELP_MAILBOX_MESSAGE` control the optional link in the login footer; leaving the URL empty hides it.
 - SMTP authentication can be enabled with `ABIA_IDENTITY_SMTP_AUTH=true`, `ABIA_IDENTITY_SMTP_USERNAME`, and `ABIA_IDENTITY_SMTP_PASSWORD`. The password is read only from the environment, TLS is required when authentication is enabled, and the rendered realm file is created with mode `0600` when it contains SMTP credentials.
 - HTTP redirect and help-mailbox URLs are limited to loopback hosts. `ssl-required=none` is also limited to loopback, and `ssl-required=all` requires an HTTPS redirect. The realm renderer does not change permissions on an existing output directory.
-- `Dockerfile.local` accepts `KEYCLOAK_VERSION`, `KEYCLOAK_BUILDER_IMAGE`, `KEYCLOAK_RUNTIME_IMAGE`, and `KEYCLOAK_JAVA_OPTS_APPEND` build arguments. Pin the builder and runtime image arguments by digest for reproducible builds. The local runtime defaults to disabling the affected Base64 JVM intrinsic until the actual runtime image is verified as patched.
+- `Dockerfile.local` accepts `ABIA_IDENTITY_VERSION`, `ABIA_IDENTITY_BUILDER_IMAGE`, and `ABIA_IDENTITY_RUNTIME_IMAGE`; the version defaults to `26.8.2`. Override both base-image arguments with reviewed digests when reproducible local builds are required. `Dockerfile.gcp` accepts the same version argument and requires both builder/runtime image arguments; the GCP release procedure must pass reviewed digests for both.
 
 ### Realm renderer settings
 
@@ -29,6 +29,7 @@ This repository is the ABIA GitHub fork of [keycloak/keycloak](https://github.co
 | `--output` | `ABIA_IDENTITY_REALM_OUTPUT` |
 | `--client-id` | `ABIA_IDENTITY_OIDC_CLIENT_ID` |
 | `--redirect-uri` | `ABIA_IDENTITY_OIDC_REDIRECT_URI` |
+| `--post-logout-redirect-uri` | `ABIA_IDENTITY_OIDC_POST_LOGOUT_REDIRECT_URI` or `PUBLIC_OIDC_POST_LOGOUT_REDIRECT_URI` (defaults to the callback origin at `/login`) |
 | `--ssl-required` | `ABIA_IDENTITY_REALM_SSL_REQUIRED` |
 | `--smtp-host` | `ABIA_IDENTITY_SMTP_HOST` |
 | `--smtp-port` | `ABIA_IDENTITY_SMTP_PORT` |
