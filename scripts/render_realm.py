@@ -11,6 +11,7 @@ from urllib.parse import urlsplit
 
 
 TEMPLATE_PATH = Path(__file__).resolve().parents[1] / "realm" / "abia-realm.json"
+KEYCLOAK_ATTRIBUTE_DELIMITER = "##"
 
 
 def parse_args() -> argparse.Namespace:
@@ -18,6 +19,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output", type=Path, default=os.getenv("ABIA_IDENTITY_REALM_OUTPUT"))
     parser.add_argument("--client-id", default=os.getenv("ABIA_IDENTITY_OIDC_CLIENT_ID"))
     parser.add_argument("--redirect-uri", default=os.getenv("ABIA_IDENTITY_OIDC_REDIRECT_URI"))
+    parser.add_argument(
+        "--platform-dev-redirect-uri",
+        default=os.getenv("ABIA_IDENTITY_PLATFORM_DEV_REDIRECT_URI", ""),
+    )
     parser.add_argument(
         "--post-logout-redirect-uri",
         default=os.getenv("ABIA_IDENTITY_OIDC_POST_LOGOUT_REDIRECT_URI")
@@ -128,6 +133,28 @@ def main() -> None:
     if (post_logout_redirect.scheme, post_logout_redirect.netloc) != (redirect.scheme, redirect.netloc):
         raise SystemExit("OIDC post-logout redirect URI must use the same origin as the OIDC redirect URI.")
 
+    platform_dev_redirect_uri = ""
+    platform_dev_post_logout_redirect_uri = ""
+    if args.platform_dev_redirect_uri:
+        platform_dev_redirect, platform_dev_host = parse_http_url(
+            args.platform_dev_redirect_uri,
+            "Platform development redirect URI",
+        )
+        if (
+            platform_dev_redirect.scheme != "http"
+            or not is_loopback(platform_dev_host)
+            or platform_dev_redirect.path != "/auth/callback"
+            or platform_dev_redirect.query
+            or platform_dev_redirect.fragment
+        ):
+            raise SystemExit(
+                "Platform development redirect URI must be an exact loopback HTTP URL ending in /auth/callback."
+            )
+        platform_dev_redirect_uri = args.platform_dev_redirect_uri
+        platform_dev_post_logout_redirect_uri = (
+            f"{platform_dev_redirect.scheme}://{platform_dev_redirect.netloc}/login"
+        )
+
     if not 1 <= args.smtp_port <= 65535:
         raise SystemExit("SMTP port must be between 1 and 65535.")
     smtp_values = (
@@ -174,7 +201,13 @@ def main() -> None:
         "SMTP_STARTTLS": args.smtp_starttls,
         "OIDC_CLIENT_ID": args.client_id,
         "OIDC_REDIRECT_URI": args.redirect_uri,
-        "OIDC_POST_LOGOUT_REDIRECT_URI": post_logout_redirect_uri,
+        "OIDC_POST_LOGOUT_REDIRECT_URI": KEYCLOAK_ATTRIBUTE_DELIMITER.join(
+            dict.fromkeys(
+                uri
+                for uri in (post_logout_redirect_uri, platform_dev_post_logout_redirect_uri)
+                if uri
+            )
+        ),
         "OIDC_WEB_ORIGIN": f"{redirect.scheme}://{redirect.netloc}",
         "LOGIN_HELP_MAILBOX_URL": mailbox_url,
         "LOGIN_HELP_MAILBOX_LABEL": mailbox_label,
@@ -188,6 +221,26 @@ def main() -> None:
         }
         rendered = Template(TEMPLATE_PATH.read_text(encoding="utf-8")).substitute(escaped_values)
         realm = json.loads(rendered)
+        if platform_dev_redirect_uri:
+            client = next(
+                (
+                    client
+                    for client in realm["clients"]
+                    if client.get("clientId") == args.client_id
+                ),
+                None,
+            )
+            if client is None:
+                raise KeyError(f"OIDC client {args.client_id} was not found in the ABIA realm template.")
+            client["redirectUris"] = list(
+                dict.fromkeys([*(client.get("redirectUris") or []), platform_dev_redirect_uri])
+            )
+            platform_dev_origin = (
+                f"{platform_dev_redirect.scheme}://{platform_dev_redirect.netloc}"
+            )
+            client["webOrigins"] = list(
+                dict.fromkeys([*(client.get("webOrigins") or []), platform_dev_origin])
+            )
         if args.smtp_auth != "true":
             realm["smtpServer"].pop("user", None)
             realm["smtpServer"].pop("password", None)
