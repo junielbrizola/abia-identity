@@ -1,0 +1,16 @@
+.abia-routable-tabs__mobile-select {
+  display: none;
+}
+
+@media screen and (max-width: 1199px) {
+  .abia-routable-tabs__mobile-select {
+    display: block;
+    width: calc(100% - 2 * var(--pf-v5-global--spacer--md));
+    margin: var(--pf-v5-global--spacer--md) var(--pf-v5-global--spacer--md) 0;
+  }
+
+  .abia-routable-tabs__tabs--mobile-select .pf-v5-c-tabs__scroll-button,
+  .abia-routable-tabs__tabs--mobile-select .pf-v5-c-tabs__list {
+    display: none;
+  }
+}

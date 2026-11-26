@@ -191,7 +191,7 @@ const Dashboard = () => {
                     {t("viewDocumentation")}
                   </Button>
                 </div>
-                <ActionList className="pf-v5-u-mt-sm">
+                <ActionList className="pf-v5-u-mt-sm keycloak__dashboard_welcome_actions">
                   <ActionListItem>
                     <Button
                       component="a"

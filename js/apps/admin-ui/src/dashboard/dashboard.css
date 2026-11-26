@@ -10,3 +10,24 @@
   max-width: 38%;
   margin-top: var(--pf-v5-global--spacer--md);
 }
+
+@media (max-width: 40rem) {
+  .keycloak__dashboard_welcome_tab {
+    max-width: 100%;
+  }
+
+  .keycloak__dashboard_welcome_actions {
+    flex-wrap: wrap;
+  }
+
+  .keycloak__dashboard_welcome_actions .pf-v5-c-action-list__item {
+    min-width: 0;
+  }
+
+  .keycloak__dashboard_welcome_actions .pf-v5-c-button {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-align: center;
+  }
+}

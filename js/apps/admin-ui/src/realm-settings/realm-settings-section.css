@@ -246,20 +246,33 @@ article.pf-v5-c-card.pf-m-flat.kc-email-connection
 }
 
 .kc_eventListeners_select {
-  width: 35rem;
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+  width: min(100%, 35rem);
 }
 
 input#kc-scopes {
-  width: 630px;
-
-  margin-right: 24px;
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+  width: min(100%, 39.375rem);
+  margin-right: var(--pf-v5-global--spacer--md);
 }
 
 .kc-client-scopes-chip-group {
-  margin-right: var(--pf-v5-global--spacer--2xl);
-  max-width: 585px;
-  min-width: 585px;
-  padding-left: none;
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: min(100%, 36.5625rem);
+  margin-right: 0;
+  padding-left: 0;
+}
+
+.pf-v5-c-chip__text {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .kc-join-group-modal-check {

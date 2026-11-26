@@ -340,6 +340,7 @@ export const RealmSettingsTabs = () => {
       <PageSection variant="light" className="pf-v5-u-p-0">
         <RoutableTabs
           isBox
+          mobileSelect
           mountOnEnter
           aria-label="realm-settings-tabs"
           defaultLocation={toRealmSettings({

@@ -1,24 +1,75 @@
+@import "./abia-product-tokens.generated.css";
+
+/* Uses the repository's generated ABIA palette while remaining independently deployable. */
+:root {
+	color-scheme: light;
+	--abia-color-ink: var(--abia-product-light-color-ink);
+	--abia-color-ink-soft: var(--abia-product-light-color-ink-soft);
+	--abia-color-muted: var(--abia-product-light-color-muted);
+	--abia-color-line: var(--abia-product-light-color-line);
+	--abia-color-line-soft: var(--abia-product-light-color-line-soft);
+	--abia-color-control-border: var(--abia-product-light-color-control-border);
+	--abia-color-canvas: var(--abia-product-light-color-canvas);
+	--abia-color-surface: var(--abia-product-light-color-surface);
+	--abia-color-surface-subtle: var(--abia-product-light-color-surface-subtle);
+	--abia-color-brand: var(--abia-product-light-color-brand);
+	--abia-color-brand-strong: var(--abia-product-light-color-brand-strong);
+	--abia-color-brand-soft: var(--abia-product-light-color-brand-soft);
+	--abia-color-focus: var(--abia-product-light-color-focus);
+	--abia-shadow-dialog: 0 18px 48px rgb(21 36 58 / 18%);
+	--abia-font-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	--abia-motion-duration-fast: 120ms;
+	--abia-motion-duration-enter: 200ms;
+	--abia-motion-easing: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme="light"]) {
+		color-scheme: dark;
+		--abia-color-ink: var(--abia-product-dark-color-ink);
+		--abia-color-ink-soft: var(--abia-product-dark-color-ink-soft);
+		--abia-color-muted: var(--abia-product-dark-color-muted);
+		--abia-color-line: var(--abia-product-dark-color-line);
+		--abia-color-line-soft: var(--abia-product-dark-color-line-soft);
+		--abia-color-control-border: var(--abia-product-dark-color-control-border);
+		--abia-color-canvas: var(--abia-product-dark-color-canvas);
+		--abia-color-surface: var(--abia-product-dark-color-surface);
+		--abia-color-surface-subtle: var(--abia-product-dark-color-surface-subtle);
+		--abia-color-brand: var(--abia-product-dark-color-brand);
+		--abia-color-brand-strong: var(--abia-product-dark-color-brand-strong);
+		--abia-color-brand-soft: var(--abia-product-dark-color-brand-soft);
+		--abia-color-focus: var(--abia-product-dark-color-focus);
+	}
+}
+
 /* Keep the local identity screen aligned with the ABIA sign-in page. */
 body#keycloak-bg {
 	background:
-		radial-gradient(ellipse at 50% 0, #e8f5f2 0, transparent 52%),
-		#f4f6fa !important;
-	color: #162438;
-	font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+		radial-gradient(ellipse at 50% 0, var(--abia-color-brand-soft) 0, transparent 52%),
+		var(--abia-color-canvas) !important;
+	color: var(--abia-color-ink);
+	font-family: var(--abia-font-body);
 }
 
 .pf-v5-c-login {
 	display: flex !important;
 	min-height: 100vh;
+	min-height: 100svh;
+	min-height: 100dvh;
 	align-items: center;
 	justify-content: center;
-	padding: 24px;
+	padding:
+		max(24px, env(safe-area-inset-top))
+		max(24px, env(safe-area-inset-right))
+		max(24px, env(safe-area-inset-bottom))
+		max(24px, env(safe-area-inset-left));
 }
 
 .pf-v5-c-login__container {
 	position: relative;
 	display: block !important;
-	width: min(410px, calc(100vw - 32px)) !important;
+	box-sizing: border-box;
+	width: min(410px, 100%) !important;
 	max-width: 410px !important;
 	padding: 0 !important;
 	margin: 0 auto !important;
@@ -26,6 +77,7 @@ body#keycloak-bg {
 
 .pf-v5-c-login__header {
 	position: absolute;
+	min-width: 0;
 	top: 31px;
 	left: 37px;
 	right: 37px;
@@ -35,57 +87,48 @@ body#keycloak-bg {
 }
 
 #kc-header-wrapper.pf-v5-c-brand {
-	display: flex;
-	flex-wrap: wrap;
+	display: grid;
+	grid-template-columns: 42px minmax(0, 1fr);
+	grid-template-rows: auto;
 	min-width: 0;
 	max-width: 100%;
 	align-items: center;
-	justify-content: flex-start;
 	column-gap: 12px;
 	padding: 0;
-	color: #162438;
+	color: var(--abia-color-ink);
 	font-size: 18px;
+	line-height: 1.25;
 	font-weight: 700;
 	letter-spacing: -0.4px;
 	white-space: normal;
 	overflow-wrap: anywhere;
+	text-wrap: pretty;
 	text-transform: none;
 }
 
 #kc-header-wrapper.pf-v5-c-brand::before {
-	content: "V";
+	content: "";
 	display: grid;
+	grid-column: 1;
+	grid-row: 1;
 	width: 42px;
 	height: 42px;
-	flex: 0 0 42px;
 	place-items: center;
 	border-radius: 12px;
-	background: linear-gradient(145deg, #0d8178, #08675f);
-	box-shadow: 0 7px 18px rgb(13 129 120 / 26%);
-	color: #fff;
-	font: 800 21px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
-
-#kc-header-wrapper.pf-v5-c-brand::after {
-	content: "PLATAFORMA DE ATENDIMENTO";
-	flex: 0 0 calc(100% - 54px);
-	margin: -8px 0 0 54px;
-	color: #6b788b;
-	font-size: 9px;
-	font-weight: 700;
-	letter-spacing: 1.1px;
+	background: url("../abia-mark.svg") center / cover no-repeat;
 }
 
 .pf-v5-c-login__main {
-	width: min(410px, calc(100vw - 32px)) !important;
+	box-sizing: border-box;
+	width: 100% !important;
 	min-width: 0;
-	max-width: none;
+	max-width: 100%;
 	margin: 0 !important;
 	padding: 112px 37px 37px;
-	border: 1px solid #dfe6ed;
+	border: 1px solid var(--abia-color-line);
 	border-radius: 14px;
-	background: #fff;
-	box-shadow: 0 18px 48px rgb(21 36 58 / 18%);
+	background: var(--abia-color-surface);
+	box-shadow: var(--abia-shadow-dialog);
 }
 
 .pf-v5-c-login__main-body,
@@ -107,15 +150,15 @@ body#keycloak-bg {
 }
 
 #kc-page-title.pf-v5-c-title {
-	color: #15243a;
-	font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	color: var(--abia-color-ink);
+	font-family: var(--abia-font-body);
 	font-size: 25px;
 	font-weight: 650;
 	letter-spacing: -0.7px;
 }
 
 .pf-v5-c-form__label-text {
-	color: #34435a;
+	color: var(--abia-color-ink-soft);
 	font-size: 13px;
 	font-weight: 600;
 }
@@ -124,16 +167,16 @@ body#keycloak-bg {
 	--pf-v5-c-form-control--after--BorderBottomWidth: 0;
 	min-height: 44px;
 	width: 100%;
-	border: 1px solid #7f8da0 !important;
+	border: 1px solid var(--abia-color-control-border) !important;
 	border-radius: 8px;
-	background: #fff;
+	background: var(--abia-color-surface);
 	box-shadow: none;
 }
 
 .pf-v5-c-form-control:focus-within {
 	--pf-v5-c-form-control--after--BorderBottomWidth: 0;
-	border-color: #0d8178 !important;
-	outline: 3px solid #075f58;
+	border-color: var(--abia-color-brand) !important;
+	outline: 3px solid var(--abia-color-focus);
 	outline-offset: 2px;
 	box-shadow: none !important;
 }
@@ -146,7 +189,7 @@ body#keycloak-bg {
 	padding: 0 12px;
 	border: 0 !important;
 	border-radius: 6px;
-	color: #162438;
+	color: var(--abia-color-ink);
 	background: transparent !important;
 	font: inherit;
 	box-shadow: none !important;
@@ -161,15 +204,15 @@ body#keycloak-bg {
 	min-width: 44px;
 	min-height: 42px;
 	border: 0;
-	border-left: 1px solid #e5ebf0;
+	border-left: 1px solid var(--abia-color-line-soft);
 	border-radius: 0 6px 6px 0;
-	color: #08675f;
-	background: #f8fafc;
+	color: var(--abia-color-brand-strong);
+	background: var(--abia-color-surface-subtle);
 }
 
 #kc-form-login #password-show-password:hover {
-	color: #075f58;
-	background: #e8f5f2;
+	color: var(--abia-color-focus);
+	background: var(--abia-color-brand-soft);
 }
 
 #kc-form-login,
@@ -195,79 +238,115 @@ body#keycloak-bg {
 }
 
 .pf-v5-c-login__main a:not(.pf-v5-c-button) {
-	color: #08675f !important;
+	color: var(--abia-color-brand-strong) !important;
 	font-weight: 600;
 	text-decoration: underline;
 	text-underline-offset: 2px;
 }
 
 .pf-v5-c-login__main a:not(.pf-v5-c-button):hover {
-	color: #075f58 !important;
+	color: var(--abia-color-focus) !important;
 }
 
 .pf-v5-c-login :is(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
-	outline: 3px solid #075f58 !important;
+	outline: 3px solid var(--abia-color-focus) !important;
 	outline-offset: 3px;
 	box-shadow: none !important;
 }
 
+@media (pointer: coarse) {
+	.pf-v5-c-login :is(button, [role="button"], .pf-v5-c-button, .pf-v5-c-form-control, .pf-v5-c-select__toggle, .pf-v5-c-text-area, input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), select, textarea, summary) {
+		min-width: var(--abia-product-accessibility-touch-target-minimum) !important;
+		min-height: var(--abia-product-accessibility-touch-target-minimum) !important;
+	}
+
+	.pf-v5-c-login :is(input[type="checkbox"], input[type="radio"]) {
+		min-width: 24px !important;
+		min-height: 24px !important;
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.pf-v5-c-login__main {
+		animation: abia-identity-surface-enter var(--abia-motion-duration-enter) var(--abia-motion-easing) both;
+	}
+
+	.pf-v5-c-login :is(a, button, input, select) {
+		transition: color var(--abia-motion-duration-fast) ease, background-color var(--abia-motion-duration-fast) ease, border-color var(--abia-motion-duration-fast) ease, box-shadow var(--abia-motion-duration-fast) ease, transform var(--abia-motion-duration-fast) ease;
+	}
+
+	.pf-v5-c-login__main .pf-v5-c-button:active {
+		transform: translateY(1px);
+	}
+}
+
+@keyframes abia-identity-surface-enter {
+	from { opacity: 0; transform: translateY(0.35rem); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
 .pf-v5-c-login__main .pf-v5-c-button.pf-m-primary {
-	--pf-v5-c-button--after--BorderColor: #0d8178;
+	--pf-v5-c-button--after--BorderColor: var(--abia-color-brand);
 	min-height: 46px;
-	border-color: #0d8178;
+	border-color: var(--abia-color-brand);
 	border-radius: 8px;
-	background: #0d8178;
-	color: #fff;
+	background: var(--abia-color-brand);
+	color: var(--abia-color-surface);
 	font-weight: 600;
 }
 
 .pf-v5-c-login__main .pf-v5-c-button.pf-m-primary:hover {
-	--pf-v5-c-button--after--BorderColor: #0b6e66;
-	border-color: #0b6e66;
-	background: #0b6e66;
+	--pf-v5-c-button--after--BorderColor: var(--abia-color-brand-strong);
+	border-color: var(--abia-color-brand-strong);
+	background: var(--abia-color-brand-strong);
 }
 
 .pf-v5-c-login__main .pf-v5-c-button.pf-m-secondary {
-	--pf-v5-c-button--after--BorderColor: #0d8178;
-	--pf-v5-c-button--m-secondary--Color: #0d8178;
-	border-color: #0d8178;
+	--pf-v5-c-button--after--BorderColor: var(--abia-color-brand);
+	--pf-v5-c-button--m-secondary--Color: var(--abia-color-brand);
+	border-color: var(--abia-color-brand);
 	border-radius: 7px;
-	background: #fff;
-	color: #0d8178;
+	background: var(--abia-color-surface);
+	color: var(--abia-color-brand);
 	font-weight: 600;
 }
 
 .pf-v5-c-login__main .pf-v5-c-button.pf-m-secondary:hover {
-	--pf-v5-c-button--after--BorderColor: #0b6e66;
-	--pf-v5-c-button--m-secondary--Color: #0b6e66;
-	border-color: #0b6e66;
-	background: #f4f6fa;
-	color: #0b6e66;
+	--pf-v5-c-button--after--BorderColor: var(--abia-color-brand);
+	--pf-v5-c-button--m-secondary--Color: var(--abia-color-brand);
+	border-color: var(--abia-color-brand);
+	background: var(--abia-color-canvas);
+	color: var(--abia-color-brand);
 }
 
 .pf-v5-c-login__main-footer,
 .pf-v5-c-login__main-footer-band {
-	color: #7c899b;
+	color: var(--abia-color-muted);
 }
 
 .abia-login-help {
+	min-width: 0;
 	margin-top: 20px;
 	padding-top: 16px;
-	border-top: 1px solid #e5ebf0;
-	color: #536176;
+	border-top: 1px solid var(--abia-color-line-soft);
+	color: var(--abia-color-muted);
 	font-size: 12px;
 	line-height: 1.55;
+	overflow-wrap: anywhere;
+	text-wrap: pretty;
 }
 
 .abia-login-help strong {
 	display: block;
 	margin-bottom: 4px;
-	color: #34435a;
+	color: var(--abia-color-ink-soft);
 	font-size: 12px;
 }
 
 .abia-login-help p {
+	max-width: 100%;
 	margin: 0;
+	overflow-wrap: anywhere;
 }
 
 .abia-login-help p + p {
@@ -275,19 +354,25 @@ body#keycloak-bg {
 }
 
 .abia-login-help a {
-	color: #075f58;
+	max-width: 100%;
+	color: var(--abia-color-focus);
 	font-weight: 650;
 	text-decoration: underline;
 	text-underline-offset: 2px;
+	overflow-wrap: anywhere;
 }
 
 .abia-login-help a:hover {
-	color: #0b6e66;
+	color: var(--abia-color-brand);
 }
 
 @media (max-width: 480px) {
 	.pf-v5-c-login {
-		padding: 16px;
+		padding:
+			max(16px, env(safe-area-inset-top))
+			max(16px, env(safe-area-inset-right))
+			max(16px, env(safe-area-inset-bottom))
+			max(16px, env(safe-area-inset-left));
 	}
 
 	.pf-v5-c-login__main {
@@ -312,12 +397,30 @@ body#keycloak-bg {
 	}
 }
 
+:root[data-motion='reduced'] #keycloak-bg :where(*, *::before, *::after) {
+	scroll-behavior: auto !important;
+	animation-duration: 0.01ms !important;
+	animation-iteration-count: 1 !important;
+	transition-duration: 0.01ms !important;
+}
+
 @media (forced-colors: active) {
 	.pf-v5-c-login__main {
 		border-color: CanvasText;
 		color: CanvasText;
 		background: Canvas;
 		box-shadow: none;
+	}
+
+	.pf-v5-c-form-control {
+		border-color: FieldText !important;
+		color: FieldText;
+		background: Field;
+	}
+
+	#kc-form-login #username,
+	#kc-form-login #password {
+		color: FieldText;
 	}
 
 	.abia-login-help {

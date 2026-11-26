@@ -39,11 +39,21 @@
         margin: 0;
       }
 
+      :root[data-theme="dark"] .keycloak__loading-container {
+        color: #e0e0e0;
+        background-color: #1b1d21;
+      }
+
       @media (prefers-color-scheme: dark) {
         .keycloak__loading-container {
           color: #e0e0e0;
           background-color: #1b1d21;
         }
+      }
+
+      :root[data-theme="light"] .keycloak__loading-container {
+        color: #151515;
+        background-color: #fff;
       }
 
       #loading-text {
@@ -62,25 +72,50 @@
         }
       }
     </script>
-    <#if darkMode>
-      <script type="module" async blocking="render">
-          const DARK_MODE_CLASS = "${properties.kcDarkModeClass}";
+    <script>
+        (() => {
+          const DARK_MODE_CLASS = "${properties.kcDarkModeClass!''}";
+          const APPEARANCE_STORAGE_KEY = "abia.appearance.v1";
           const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
-          updateDarkMode(mediaQuery.matches);
-          mediaQuery.addEventListener("change", (event) => updateDarkMode(event.matches));
-
-          function updateDarkMode(isEnabled) {
-            const { classList } = document.documentElement;
-
-            if (isEnabled) {
-              classList.add(DARK_MODE_CLASS);
-            } else {
-              classList.remove(DARK_MODE_CLASS);
+          const readPreference = () => {
+            try {
+              const value = JSON.parse(localStorage.getItem(APPEARANCE_STORAGE_KEY) || "null");
+              const stored = value && typeof value === "object" && !Array.isArray(value) ? value : {};
+              return {
+                theme: stored.theme === "light" || stored.theme === "dark" || stored.theme === "system" ? stored.theme : "system",
+                density: stored.density === "compact" || stored.density === "comfortable" ? stored.density : "comfortable",
+                motion: stored.motion === "reduced" || stored.motion === "system" ? stored.motion : "system",
+              };
+            } catch {
+              return { theme: "system", density: "comfortable", motion: "system" };
             }
-          }
-      </script>
-    </#if>
+          };
+          let preference = readPreference();
+
+          const applyPreference = () => {
+            const isDark = preference.theme === "dark" || (preference.theme === "system" && mediaQuery.matches);
+            const theme = isDark ? "dark" : "light";
+            const { classList, dataset } = document.documentElement;
+            dataset.theme = theme;
+            dataset.themePreference = preference.theme;
+            dataset.density = preference.density;
+            dataset.motion = preference.motion;
+            classList.toggle("pf-v5-theme-dark", isDark);
+            if (DARK_MODE_CLASS) classList.toggle(DARK_MODE_CLASS, isDark);
+            document.querySelector('meta[name="color-scheme"]')?.setAttribute("content", theme);
+          };
+
+          applyPreference();
+          mediaQuery.addEventListener("change", () => {
+            if (preference.theme === "system") applyPreference();
+          });
+          window.addEventListener("storage", (event) => {
+            if (event.key !== APPEARANCE_STORAGE_KEY && event.key !== null) return;
+            preference = readPreference();
+            applyPreference();
+          });
+        })();
+    </script>
     <#if !isSecureContext>
       <script type="module" src="${resourceCommonUrl}/vendor/web-crypto-shim/web-crypto-shim.js"></script>
     </#if>

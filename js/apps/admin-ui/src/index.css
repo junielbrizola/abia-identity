@@ -1,5 +1,164 @@
+@import "./abia-product-tokens.generated.css";
+
 img.keycloak__pageheader_brand {
   height: 35px;
+}
+
+/* ABIA identity console theme. PatternFly 5 global tokens are scoped to the console root. */
+#app {
+  --abia-color-brand: var(--abia-product-light-color-brand);
+  --abia-color-brand-strong: var(--abia-product-light-color-brand-strong);
+  --abia-color-brand-soft: var(--abia-product-light-color-brand-soft);
+  --abia-color-focus: var(--abia-product-light-color-focus);
+  --abia-color-ink: var(--abia-product-light-color-ink);
+  --abia-color-muted: var(--abia-product-light-color-muted);
+  --abia-color-control-ink: var(--abia-product-light-color-ink);
+  --abia-color-line: var(--abia-product-light-color-line);
+  --abia-color-surface: var(--abia-product-light-color-surface);
+  --abia-motion-duration-fast: var(--abia-product-motion-duration-fast);
+  --abia-motion-easing-standard: var(--abia-product-motion-easing-standard);
+  --pf-v5-global--primary-color--100: var(--abia-color-brand);
+  --pf-v5-global--primary-color--200: var(--abia-color-brand-strong);
+  --pf-v5-global--active-color--100: var(--abia-color-brand-strong);
+  --pf-v5-global--active-color--200: var(--abia-color-brand-soft);
+  --pf-v5-global--Link--Color: var(--abia-color-brand-strong);
+  --pf-v5-global--Link--Color--hover: var(--abia-color-focus);
+}
+
+#app[data-theme="dark"],
+:root[data-theme="dark"] #app {
+  color-scheme: dark;
+  --abia-color-brand: var(--abia-product-dark-color-brand);
+  --abia-color-brand-strong: var(--abia-product-dark-color-brand-strong);
+  --abia-color-brand-soft: var(--abia-product-dark-color-brand-soft);
+  --abia-color-focus: var(--abia-product-dark-color-focus);
+  --abia-color-ink: var(--abia-product-dark-color-ink);
+  --abia-color-muted: var(--abia-product-dark-color-muted);
+  --abia-color-control-ink: var(--abia-product-dark-color-ink);
+  --abia-color-line: var(--abia-product-dark-color-line);
+  --abia-color-surface: var(--abia-product-dark-color-surface);
+  --pf-v5-global--Color--100: var(--abia-product-dark-color-ink);
+  --pf-v5-global--Color--200: var(--abia-product-dark-color-ink-soft);
+  --pf-v5-global--BackgroundColor--100: var(--abia-product-dark-color-canvas);
+  --pf-v5-global--BackgroundColor--200: var(--abia-product-dark-color-surface);
+  --pf-v5-global--BorderColor--100: var(--abia-product-dark-color-line);
+}
+
+#app[data-theme="dark"] :where(.pf-v5-c-page, .pf-v5-c-page__main-section, .pf-v5-c-card, .pf-v5-c-modal-box),
+:root[data-theme="dark"] #app :where(.pf-v5-c-page, .pf-v5-c-page__main-section, .pf-v5-c-card, .pf-v5-c-modal-box) {
+  border-color: var(--abia-product-dark-color-line);
+  background-color: var(--abia-product-dark-color-surface);
+  color: var(--abia-product-dark-color-ink);
+}
+
+#app[data-theme="dark"] :where(.pf-v5-c-form-control, .pf-v5-c-select__toggle, .pf-v5-c-text-area),
+:root[data-theme="dark"] #app :where(.pf-v5-c-form-control, .pf-v5-c-select__toggle, .pf-v5-c-text-area) {
+  border-color: var(--abia-product-dark-color-muted);
+  background-color: var(--abia-product-dark-color-surface-subtle);
+  color: var(--abia-product-dark-color-ink);
+}
+
+#app :where(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), textarea, select, .pf-v5-c-switch__label) {
+  color: var(--abia-color-control-ink);
+  caret-color: var(--abia-color-control-ink);
+}
+
+#app :where(input::placeholder, textarea::placeholder) {
+  color: var(--abia-color-muted);
+  opacity: 1;
+}
+
+#app[data-theme="dark"] :where(a:not(.pf-v5-c-button), .pf-v5-c-button.pf-m-link:not(.pf-m-disabled)),
+:root[data-theme="dark"] #app :where(a:not(.pf-v5-c-button), .pf-v5-c-button.pf-m-link:not(.pf-m-disabled)) {
+  color: var(--abia-color-brand-strong);
+}
+
+#app[data-theme="dark"] :where(a:not(.pf-v5-c-button), .pf-v5-c-button.pf-m-link:not(.pf-m-disabled)):hover,
+:root[data-theme="dark"] #app :where(a:not(.pf-v5-c-button), .pf-v5-c-button.pf-m-link:not(.pf-m-disabled)):hover {
+  color: var(--abia-color-focus);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) #app {
+    color-scheme: dark;
+    --abia-color-brand: var(--abia-product-dark-color-brand);
+    --abia-color-brand-strong: var(--abia-product-dark-color-brand-strong);
+    --abia-color-brand-soft: var(--abia-product-dark-color-brand-soft);
+    --abia-color-focus: var(--abia-product-dark-color-focus);
+    --abia-color-ink: var(--abia-product-dark-color-ink);
+    --abia-color-muted: var(--abia-product-dark-color-muted);
+    --abia-color-control-ink: var(--abia-product-dark-color-ink);
+    --abia-color-line: var(--abia-product-dark-color-line);
+    --abia-color-surface: var(--abia-product-dark-color-surface);
+    --pf-v5-global--Color--100: var(--abia-product-dark-color-ink);
+    --pf-v5-global--Color--200: var(--abia-product-dark-color-ink-soft);
+    --pf-v5-global--BackgroundColor--100: var(--abia-product-dark-color-canvas);
+    --pf-v5-global--BackgroundColor--200: var(--abia-product-dark-color-surface);
+    --pf-v5-global--BorderColor--100: var(--abia-product-dark-color-line);
+  }
+
+  :root:not([data-theme="light"]) #app :where(a:not(.pf-v5-c-button), .pf-v5-c-button.pf-m-link:not(.pf-m-disabled)) {
+    color: var(--abia-color-brand-strong);
+  }
+
+  :root:not([data-theme="light"]) #app :where(a:not(.pf-v5-c-button), .pf-v5-c-button.pf-m-link:not(.pf-m-disabled)):hover {
+    color: var(--abia-color-focus);
+  }
+}
+
+#app[data-density="compact"] :where(.pf-v5-c-button, .pf-v5-c-form-control, .pf-v5-c-select__toggle),
+:root[data-density="compact"] #app :where(.pf-v5-c-button, .pf-v5-c-form-control, .pf-v5-c-select__toggle) {
+  min-height: 2.35rem;
+}
+
+#app[data-density="compact"] :where(.pf-v5-c-card, .pf-v5-c-page__main-section),
+:root[data-density="compact"] #app :where(.pf-v5-c-card, .pf-v5-c-page__main-section) {
+  --pf-v5-global--spacer--md: 0.75rem;
+  --pf-v5-global--spacer--lg: 1rem;
+}
+
+@media (pointer: coarse) {
+  #app :where(button, [role="button"], .pf-v5-c-menu-toggle, .pf-v5-c-form-control, .pf-v5-c-select__toggle, .pf-v5-c-text-area, input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), select, textarea, summary) {
+    min-width: var(--abia-product-accessibility-touch-target-minimum) !important;
+    min-height: var(--abia-product-accessibility-touch-target-minimum) !important;
+  }
+
+  #app a.pf-v5-c-button {
+    min-width: var(--abia-product-accessibility-touch-target-minimum) !important;
+    min-height: var(--abia-product-accessibility-touch-target-minimum) !important;
+  }
+
+  #app :where(input[type="checkbox"], input[type="radio"]) {
+    min-width: 24px !important;
+    min-height: 24px !important;
+  }
+}
+
+#app :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 3px solid var(--abia-color-focus);
+  outline-offset: 2px;
+}
+
+#app :where(a, button, input, select, textarea) {
+  transition-property: color, background-color, border-color, box-shadow, opacity;
+  transition-duration: var(--abia-motion-duration-fast);
+  transition-timing-function: var(--abia-motion-easing-standard);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #app :where(*, *::before, *::after) {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+:root[data-motion="reduced"] #app :where(*, *::before, *::after) {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
 }
 
 .keycloak__form {

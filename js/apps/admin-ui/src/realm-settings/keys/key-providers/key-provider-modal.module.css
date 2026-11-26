@@ -1,4 +1,10 @@
 
 .dialog {
-  overflow: scroll;
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: min(100%, calc(100vw - 2rem));
+  max-height: min(90dvh, 48rem);
+  overflow: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
 }

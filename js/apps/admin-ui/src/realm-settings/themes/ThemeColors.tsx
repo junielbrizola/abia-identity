@@ -41,14 +41,24 @@ import { ColorControl } from "./ColorControl";
 type ThemeType = "light" | "dark";
 
 const switchTheme = (theme: ThemeType) => {
-  if (theme === "light") {
-    document
-      .querySelector('meta[name="color-scheme"]')!
-      .setAttribute("content", "light");
-    document.documentElement.classList.remove("pf-v5-theme-dark");
-  } else {
-    document.documentElement.classList.add("pf-v5-theme-dark");
+  const root = document.documentElement;
+  root.dataset.theme = theme;
+  document.getElementById("app")?.setAttribute("data-theme", theme);
+  root.classList.toggle("pf-v5-theme-dark", theme === "dark");
+  document
+    .querySelector('meta[name="color-scheme"]')
+    ?.setAttribute("content", theme);
+};
+
+const resolveAppearanceTheme = (fallbackTheme: ThemeType): ThemeType => {
+  const preference = document.documentElement.dataset.themePreference;
+  if (preference === "light" || preference === "dark") return preference;
+  if (preference === "system") {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
   }
+  return fallbackTheme;
 };
 
 type ThemeColorsProps = {
@@ -81,8 +91,12 @@ export const ThemeColors = ({
     if (darkMode === "true") return "dark";
     return mediaQuery.matches ? "dark" : "light";
   };
-  const originalTheme = useMemo(() => getDarkModeFromRealm(), []);
-  const [theme, setTheme] = useState<ThemeType>(initialTheme || originalTheme);
+  const realmTheme = useMemo(() => getDarkModeFromRealm(), []);
+  const originalTheme = useMemo(
+    () => resolveAppearanceTheme(realmTheme),
+    [realmTheme],
+  );
+  const [theme, setTheme] = useState<ThemeType>(initialTheme || realmTheme);
   const mapping = useMemo(
     () => (theme === "light" ? lightTheme() : darkTheme()),
     [theme],
@@ -236,7 +250,7 @@ export const ThemeColors = ({
     setOverriddenColors(new Set());
     switchTheme(theme);
     return () => {
-      switchTheme(originalTheme);
+      switchTheme(resolveAppearanceTheme(originalTheme));
     };
   }, [theme]);
 
