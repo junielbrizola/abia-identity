@@ -1,0 +1,42 @@
+ARG ABIA_IDENTITY_BUILDER_IMAGE
+ARG ABIA_IDENTITY_RUNTIME_IMAGE
+ARG ABIA_IDENTITY_VERSION=26.8.2
+
+FROM ${ABIA_IDENTITY_BUILDER_IMAGE} AS source-build
+ARG ABIA_IDENTITY_VERSION
+WORKDIR /src
+RUN apt-get update && apt-get install -y --no-install-recommends libicu-dev \
+    && rm -rf /var/lib/apt/lists/*
+COPY . .
+RUN ./mvnw -pl quarkus/deployment,quarkus/dist -am -DskipTests clean install \
+    && archive="$(find quarkus/dist/target -maxdepth 1 -type f -name 'keycloak-*.zip' ! -name '*sources*' -print -quit)" \
+    && test -n "$archive" \
+    && mkdir -p /out \
+    && cd /out \
+    && jar xf "/src/$archive" \
+    && find "/out/keycloak-${ABIA_IDENTITY_VERSION}/bin" -type f -name '*.sh' -exec chmod 755 {} \; \
+    && test -x "/out/keycloak-${ABIA_IDENTITY_VERSION}/bin/kc.sh"
+
+FROM ${ABIA_IDENTITY_RUNTIME_IMAGE}
+ARG ABIA_IDENTITY_VERSION
+USER root
+RUN groupadd --gid 1000 abia-identity \
+    && useradd --uid 1000 --gid 1000 --home-dir /opt/keycloak --shell /usr/sbin/nologin abia-identity \
+    && mkdir -p /opt/keycloak/data/import
+COPY --from=source-build --chown=1000:1000 /out/keycloak-${ABIA_IDENTITY_VERSION}/ /opt/keycloak/
+COPY --from=source-build --chown=1000:1000 /src/themes/abia/ /opt/keycloak/themes/abia/
+USER 1000:1000
+RUN /opt/keycloak/bin/kc.sh build \
+    --db=postgres \
+    --health-enabled=true \
+    --metrics-enabled=true \
+    --features=stateless
+
+ENV KC_HTTP_ENABLED=true \
+    KC_HTTP_PORT=8080 \
+    KC_HEALTH_ENABLED=true \
+    KC_METRICS_ENABLED=true \
+    KC_PROXY_HEADERS=xforwarded
+
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
+CMD ["start", "--optimized", "--import-realm"]

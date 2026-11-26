@@ -10,6 +10,15 @@
   "loginWithEmailAllowed": true,
   "registrationAllowed": false,
   "resetPasswordAllowed": true,
+  "bruteForceProtected": true,
+  "permanentLockout": false,
+  "failureFactor": 10,
+  "waitIncrementSeconds": 60,
+  "quickLoginCheckMilliSeconds": 1000,
+  "minimumQuickLoginWaitSeconds": 60,
+  "maxFailureWaitSeconds": 900,
+  "maxDeltaTimeSeconds": 43200,
+  "passwordPolicy": "length(12) and upperCase(1) and lowerCase(1) and digits(1) and specialChars(1) and passwordHistory(5) and notUsername and notEmail",
   "smtpServer": {
     "host": "$SMTP_HOST",
     "port": "$SMTP_PORT",
@@ -39,7 +48,8 @@
       "redirectUris": ["$OIDC_REDIRECT_URI"],
       "webOrigins": ["$OIDC_WEB_ORIGIN"],
       "attributes": {
-        "pkce.code.challenge.method": "S256"
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "$OIDC_POST_LOGOUT_REDIRECT_URI"
       }
     }
   ]

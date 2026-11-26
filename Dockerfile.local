@@ -1,11 +1,12 @@
-ARG KEYCLOAK_VERSION=26.8.2
-ARG KEYCLOAK_BUILDER_IMAGE=maven:3.9-eclipse-temurin-25
-ARG KEYCLOAK_RUNTIME_IMAGE=quay.io/keycloak/keycloak:${KEYCLOAK_VERSION}
-ARG KEYCLOAK_JAVA_OPTS_APPEND=-XX:-UseBASE64Intrinsics
+ARG ABIA_IDENTITY_BUILDER_IMAGE=maven:3.9-eclipse-temurin-25
+ARG ABIA_IDENTITY_RUNTIME_IMAGE=eclipse-temurin:25-jre
+ARG ABIA_IDENTITY_VERSION=26.8.2
 
-FROM ${KEYCLOAK_BUILDER_IMAGE} AS source-build
-ARG KEYCLOAK_VERSION
+FROM ${ABIA_IDENTITY_BUILDER_IMAGE} AS source-build
+ARG ABIA_IDENTITY_VERSION
 WORKDIR /src
+RUN apt-get update && apt-get install -y --no-install-recommends libicu-dev \
+    && rm -rf /var/lib/apt/lists/*
 COPY . .
 RUN ./mvnw -pl quarkus/deployment,quarkus/dist -am -DskipTests clean install \
     && archive="$(find quarkus/dist/target -maxdepth 1 -type f -name 'keycloak-*.zip' ! -name '*sources*' -print -quit)" \
@@ -13,15 +14,21 @@ RUN ./mvnw -pl quarkus/deployment,quarkus/dist -am -DskipTests clean install \
     && mkdir -p /out \
     && cd /out \
     && jar xf "/src/$archive" \
-    && find "/out/keycloak-${KEYCLOAK_VERSION}/bin" -type f -name '*.sh' -exec chmod 755 {} \; \
-    && test -f "/out/keycloak-${KEYCLOAK_VERSION}/bin/kc.sh"
+    && find "/out/keycloak-${ABIA_IDENTITY_VERSION}/bin" -type f -name '*.sh' -exec chmod 755 {} \; \
+    && test -x "/out/keycloak-${ABIA_IDENTITY_VERSION}/bin/kc.sh"
 
-FROM ${KEYCLOAK_RUNTIME_IMAGE}
-ARG KEYCLOAK_VERSION
-ARG KEYCLOAK_JAVA_OPTS_APPEND
+FROM ${ABIA_IDENTITY_RUNTIME_IMAGE}
+ARG ABIA_IDENTITY_VERSION
 USER root
-RUN rm -rf /opt/keycloak && mkdir -p /opt/keycloak
-COPY --from=source-build --chown=keycloak:keycloak /out/keycloak-${KEYCLOAK_VERSION}/ /opt/keycloak/
-COPY --from=source-build --chown=keycloak:keycloak /src/themes/abia/ /opt/keycloak/themes/abia/
-ENV JAVA_OPTS_APPEND="${KEYCLOAK_JAVA_OPTS_APPEND}"
-USER keycloak
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && if ! getent group 1000 >/dev/null; then groupadd --gid 1000 abia-identity; fi \
+    && if ! getent passwd 1000 >/dev/null; then useradd --uid 1000 --gid 1000 --home-dir /opt/keycloak --shell /usr/sbin/nologin abia-identity; fi \
+    && mkdir -p /opt/keycloak/data/import
+COPY --from=source-build --chown=1000:1000 /out/keycloak-${ABIA_IDENTITY_VERSION}/ /opt/keycloak/
+COPY --from=source-build --chown=1000:1000 /src/themes/abia/ /opt/keycloak/themes/abia/
+RUN chown -R 1000:1000 /opt/keycloak/data
+USER 1000:1000
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
+CMD ["start-dev", "--import-realm"]

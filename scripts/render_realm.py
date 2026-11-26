@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-"""Render ABIA's Keycloak realm template with environment-specific values."""
+"""Render the ABIA Identity realm template with environment-specific values."""
 
 import argparse
-import ipaddress
 import json
 import os
 from pathlib import Path
@@ -19,6 +18,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output", type=Path, default=os.getenv("ABIA_IDENTITY_REALM_OUTPUT"))
     parser.add_argument("--client-id", default=os.getenv("ABIA_IDENTITY_OIDC_CLIENT_ID"))
     parser.add_argument("--redirect-uri", default=os.getenv("ABIA_IDENTITY_OIDC_REDIRECT_URI"))
+    parser.add_argument(
+        "--post-logout-redirect-uri",
+        default=os.getenv("ABIA_IDENTITY_OIDC_POST_LOGOUT_REDIRECT_URI")
+        or os.getenv("PUBLIC_OIDC_POST_LOGOUT_REDIRECT_URI"),
+    )
     parser.add_argument("--ssl-required", choices=("none", "external", "all"), default=os.getenv("ABIA_IDENTITY_REALM_SSL_REQUIRED"))
     parser.add_argument("--smtp-host", default=os.getenv("ABIA_IDENTITY_SMTP_HOST"))
     parser.add_argument("--smtp-port", type=int, default=os.getenv("ABIA_IDENTITY_SMTP_PORT"))
@@ -35,13 +39,10 @@ def parse_args() -> argparse.Namespace:
 
 
 def is_loopback(hostname: str) -> bool:
-    normalized = hostname.rstrip(".").lower()
-    if normalized == "localhost" or normalized.endswith(".localhost"):
-        return True
-    try:
-        return ipaddress.ip_address(normalized).is_loopback
-    except ValueError:
-        return False
+    # Keep local HTTP callback acceptance aligned with the browser client. Python's
+    # urlsplit().hostname removes the brackets from IPv6 literals, so ::1 is the
+    # equivalent of the frontend URL.hostname value [::1].
+    return hostname.lower() in {"localhost", "127.0.0.1", "::1"}
 
 
 def parse_http_url(value: str, setting_name: str):
@@ -108,10 +109,9 @@ def main() -> None:
         raise SystemExit("SMTP SSL and STARTTLS settings must be true or false.")
 
     redirect, redirect_host = parse_http_url(args.redirect_uri, "OIDC redirect URI")
-    if (
-        redirect.query
-        or redirect.fragment
-    ):
+    if redirect.path != "/auth/callback":
+        raise SystemExit("OIDC redirect URI path must be /auth/callback.")
+    if redirect.query or redirect.fragment:
         raise SystemExit("OIDC redirect URI must be an HTTP(S) URL without credentials, query, or fragment.")
     loopback_redirect = is_loopback(redirect_host)
     if redirect.scheme == "http" and not loopback_redirect:
@@ -120,6 +120,13 @@ def main() -> None:
         raise SystemExit("ssl-required=none is allowed only for loopback OIDC redirect hosts.")
     if args.ssl_required == "all" and redirect.scheme != "https":
         raise SystemExit("ssl-required=all requires an HTTPS OIDC redirect URI.")
+
+    post_logout_redirect_uri = args.post_logout_redirect_uri or f"{redirect.scheme}://{redirect.netloc}/login"
+    post_logout_redirect, _ = parse_http_url(post_logout_redirect_uri, "OIDC post-logout redirect URI")
+    if post_logout_redirect.query or post_logout_redirect.fragment:
+        raise SystemExit("OIDC post-logout redirect URI must not contain a query or fragment.")
+    if (post_logout_redirect.scheme, post_logout_redirect.netloc) != (redirect.scheme, redirect.netloc):
+        raise SystemExit("OIDC post-logout redirect URI must use the same origin as the OIDC redirect URI.")
 
     if not 1 <= args.smtp_port <= 65535:
         raise SystemExit("SMTP port must be between 1 and 65535.")
@@ -167,6 +174,7 @@ def main() -> None:
         "SMTP_STARTTLS": args.smtp_starttls,
         "OIDC_CLIENT_ID": args.client_id,
         "OIDC_REDIRECT_URI": args.redirect_uri,
+        "OIDC_POST_LOGOUT_REDIRECT_URI": post_logout_redirect_uri,
         "OIDC_WEB_ORIGIN": f"{redirect.scheme}://{redirect.netloc}",
         "LOGIN_HELP_MAILBOX_URL": mailbox_url,
         "LOGIN_HELP_MAILBOX_LABEL": mailbox_label,
