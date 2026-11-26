@@ -1,12 +1,10 @@
-import { MouseEvent as ReactMouseEvent, useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
   Background,
   Controls,
   Edge,
-  EdgeTypes,
   MiniMap,
   Node,
-  NodeMouseHandler,
   Position,
   ReactFlow,
   ReactFlowInstance,
@@ -18,7 +16,6 @@ import { useUpdateEffect } from "../../utils/useUpdateEffect";
 import type { ExecutionList, ExpandableExecution } from "../execution-model";
 import { providerConditionFilter } from "../FlowDetails";
 import { getLayoutedEdges, getLayoutedNodes } from "./diagram/auto-layout";
-import { ButtonEdge, ButtonEdges } from "./diagram/ButtonEdge";
 import { ConditionalNode } from "./diagram/ConditionalNode";
 import { EndSubFlowNode, StartSubFlowNode } from "./diagram/SubFlowNode";
 
@@ -74,19 +71,9 @@ const createEdge = (
   label?: ConditionLabel,
 ): Edge => ({
   id: `edge-${fromNode}-to-${toNode}`,
-  type: "buttonEdge",
   source: fromNode,
   target: toNode,
   label: label,
-  data: {
-    onEdgeClick: (
-      evt: ReactMouseEvent<HTMLButtonElement, MouseEvent>,
-      id: string,
-    ) => {
-      evt.stopPropagation();
-      alert(`hello ${id}`);
-    },
-  },
 });
 
 const createNode = (
@@ -228,10 +215,6 @@ const createGraph = (
   };
 };
 
-const edgeTypes: ButtonEdges = {
-  buttonEdge: ButtonEdge,
-};
-
 function renderGraph(executionList: ExpandableExecution[]): [Node[], Edge[]] {
   const executionListNoDisabled = executionList.filter(
     (e) => e.requirement !== "DISABLED",
@@ -255,7 +238,6 @@ function renderGraph(executionList: ExpandableExecution[]): [Node[], Edge[]] {
 export const FlowDiagram = ({
   executionList: { expandableList },
 }: FlowDiagramProps) => {
-  const [expandDrawer, setExpandDrawer] = useState(false);
   const [initialNodes, initialEdges] = useMemo(
     () => renderGraph(expandableList),
     [],
@@ -272,10 +254,6 @@ export const FlowDiagram = ({
   const onInit = (reactFlowInstance: ReactFlowInstance) =>
     reactFlowInstance.fitView({ duration: 100 });
 
-  const onNodeClick: NodeMouseHandler = () => {
-    setExpandDrawer(!expandDrawer);
-  };
-
   return (
     <ReactFlow
       nodes={nodes}
@@ -284,8 +262,6 @@ export const FlowDiagram = ({
       onEdgesChange={onEdgesChange}
       onInit={onInit}
       nodeTypes={nodeTypes}
-      edgeTypes={edgeTypes as EdgeTypes}
-      onNodeClick={onNodeClick}
       nodesConnectable={false}
     >
       <MiniMap />

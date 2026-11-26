@@ -19,10 +19,12 @@ import {
 import { TrashIcon } from "@patternfly/react-icons";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 import { useAdminClient } from "../../admin-client";
 import { DynamicComponents } from "../../components/dynamic/DynamicComponents";
 import { convertFormValuesToObject, convertToFormValues } from "../../util";
+import { extractUserProfileErrorMessages } from "../../user/utils/user-profile";
 
 type RequiredActionConfigModalForm = {
   // alias: string;
@@ -96,14 +98,14 @@ export const RequiredActionConfigModal = ({
       onClose();
     } catch (error) {
       if (isUserProfileError(error)) {
-        setUserProfileServerError(
+        setUserProfileServerError<RequiredActionConfigModalForm>(
           error,
-          (name: string | number, error: unknown) => {
-            // TODO: Does not set set the error message to the field, yet.
-            // Still, this will do all front end replacement and translation of keys.
-            addError("configSaveError", (error as any).message);
-          },
-          t,
+          form.setError,
+          ((key, param) => t(key as string, param as any)) as TFunction,
+        );
+        addError(
+          "configSaveError",
+          extractUserProfileErrorMessages(error, t),
         );
       } else {
         addError("configSaveError", error);
